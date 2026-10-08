@@ -420,6 +420,211 @@ index d0232a1..1dd9d0a 100644
  .loading {
    padding: 90rpx 0;
    color: var(--muted);
+diff --git a/pages/search/index.vue b/pages/search/index.vue
+new file mode 100644
+index 0000000..297ca83
+--- /dev/null
++++ b/pages/search/index.vue
+@@ -0,0 +1,146 @@
++<template>
++  <view class="page-shell no-tab">
++    <view class="search-box">
++      <text class="search-icon">⌕</text>
++      <input
++        v-model="query"
++        class="search-input"
++        focus
++        placeholder="搜索物品名称，如校园卡"
++        confirm-type="search"
++        @confirm="remember"
++      />
++      <text v-if="query" class="clear" @click="query = ''">✕</text>
++    </view>
++
++    <view class="section-title">
++      <text>热门搜索</text>
++    </view>
++    <view class="hot-list">
++      <button
++        v-for="keyword in hotKeywords"
++        :key="keyword"
++        class="hot-item"
++        @click="selectKeyword(keyword)"
++      >
++        {{ keyword }}
++      </button>
++    </view>
++
++    <view class="section-title">
++      <text>搜索结果</text>
++      <text class="count">共 {{ results.length }} 条</text>
++    </view>
++
++    <view v-if="query && results.length" class="list">
++      <ItemCard
++        v-for="item in results"
++        :key="item.id"
++        :item="item"
++        @select="openDetail"
++      />
++    </view>
++    <EmptyState
++      v-else-if="query"
++      icon="🔍"
++      title="没有找到相关物品"
++      description="换个关键词试试，或发布一条寻物信息让同学帮你留意。"
++      action-text="发布寻物信息"
++      @action="openPublish"
++    />
++    <view v-else class="search-hint">
++      <text>输入关键词后，将按名称、描述、分类和地点实时匹配。</text>
++    </view>
++  </view>
++</template>
++
++<script setup>
++import { computed, ref } from "vue";
++import EmptyState from "../../components/EmptyState.vue";
++import ItemCard from "../../components/ItemCard.vue";
++import { useItemStore } from "../../src/store/item-store.js";
++import { filterItems } from "../../src/domain/search.js";
++
++const store = useItemStore();
++const query = ref("");
++const hotKeywords = ["校园卡", "钥匙", "耳机", "雨伞", "水杯", "书籍"];
++
++const results = computed(() => {
++  if (!query.value.trim()) return [];
++  return filterItems(store.items.value, {
++    query: query.value,
++    sort: "desc"
++  });
++});
++
++function selectKeyword(keyword) {
++  query.value = keyword;
++  remember();
++}
++
++function remember() {
++  store.rememberSearch(query.value);
++}
++
++function openDetail(id) {
++  remember();
++  uni.navigateTo({ url: `/pages/detail/index?id=${encodeURIComponent(id)}` });
++}
++
++function openPublish() {
++  remember();
++  uni.navigateTo({ url: "/pages/publish/index?type=lost" });
++}
++</script>
++
++<style scoped>
++.search-box {
++  display: flex;
++  align-items: center;
++  height: 82rpx;
++  padding: 0 22rpx;
++  border-radius: 24rpx;
++  background: #eef1f6;
++}
++
++.search-icon {
++  margin-right: 12rpx;
++  color: var(--muted);
++  font-size: 34rpx;
++}
++
++.search-input {
++  min-width: 0;
++  flex: 1;
++  font-size: 27rpx;
++}
++
++.clear {
++  color: var(--muted);
++  font-size: 25rpx;
++}
++
++.hot-list {
++  display: flex;
++  gap: 16rpx;
++  flex-wrap: wrap;
++}
++
++.hot-item {
++  padding: 14rpx 24rpx;
++  border-radius: 999rpx;
++  background: #fff;
++  color: var(--sub);
++  font-size: 24rpx;
++  font-weight: 700;
++  box-shadow: 0 4rpx 14rpx rgba(23, 26, 33, 0.05);
++}
++
++.search-hint {
++  padding: 100rpx 34rpx;
++  color: var(--muted);
++  font-size: 25rpx;
++  line-height: 1.8;
++  text-align: center;
++}
++</style>
+diff --git a/src/domain/search.js b/src/domain/search.js
+new file mode 100644
+index 0000000..b7a0ec8
+--- /dev/null
++++ b/src/domain/search.js
+@@ -0,0 +1,47 @@
++import { cleanText } from "./validation.js";
++
++export function matchesQuery(item, query) {
++  const keyword = cleanText(query).toLocaleLowerCase();
++  if (!keyword) return true;
++
++  return [
++    item.title,
++    item.description,
++    item.category,
++    item.location
++  ]
++    .map((value) => cleanText(value).toLocaleLowerCase())
++    .some((value) => value.includes(keyword));
++}
++
++export function sortItems(items, direction = "desc") {
++  const factor = direction === "asc" ? 1 : -1;
++  return [...items].sort((left, right) => {
++    const leftTime = new Date(left.createdAt).getTime();
++    const rightTime = new Date(right.createdAt).getTime();
++    return (leftTime - rightTime) * factor;
++  });
++}
++
++export function filterItems(items, filters = {}) {
++  const {
++    type = "all",
++    category = "all",
++    location = "",
++    query = "",
++    status = "all",
++    sort = "desc"
++  } = filters;
++
++  const result = items.filter((item) => {
++    if (type !== "all" && item.type !== type) return false;
++    if (category !== "all" && item.category !== category) return false;
++    if (status !== "all" && item.status !== status) return false;
++    if (cleanText(location) && !cleanText(item.location).includes(cleanText(location))) {
++      return false;
++    }
++    return matchesQuery(item, query);
++  });
++
++  return sortItems(result, sort);
++}
 diff --git a/src/repositories/local.js b/src/repositories/local.js
 index cf4810b..ece4945 100644
 --- a/src/repositories/local.js
@@ -480,3 +685,81 @@ index cf4810b..ece4945 100644
    }
  
    async function getItem(id) {
+diff --git a/tests/search.test.js b/tests/search.test.js
+new file mode 100644
+index 0000000..b79a3f6
+--- /dev/null
++++ b/tests/search.test.js
+@@ -0,0 +1,72 @@
++import { describe, expect, it } from "vitest";
++import { filterItems, matchesQuery, sortItems } from "../src/domain/search.js";
++
++function item(overrides = {}) {
++  return {
++    id: "1",
++    type: "lost",
++    status: "open",
++    title: "校园卡",
++    category: "证件卡片",
++    location: "紫金楼 A 座",
++    description: "蓝色卡面，尾号 0821。",
++    createdAt: "2026-10-08T10:00:00+08:00",
++    ...overrides
++  };
++}
++
++describe("search domain", () => {
++  it("按名称、描述、分类和地点搜索", () => {
++    expect(matchesQuery(item(), "校园卡")).toBe(true);
++    expect(matchesQuery(item(), "0821")).toBe(true);
++    expect(matchesQuery(item(), "证件")).toBe(true);
++    expect(matchesQuery(item(), "紫金楼")).toBe(true);
++    expect(matchesQuery(item(), "耳机")).toBe(false);
++  });
++
++  it("同时按类型、分类、状态和地点筛选", () => {
++    const items = [
++      item({ id: "1", type: "lost", category: "证件卡片", location: "紫金楼 A 座" }),
++      item({ id: "2", type: "found", category: "电子产品", location: "图书馆", status: "resolved" }),
++      item({ id: "3", type: "found", category: "电子产品", location: "一区食堂" })
++    ];
++
++    const result = filterItems(items, {
++      type: "found",
++      category: "电子产品",
++      status: "open",
++      location: "食堂"
++    });
++
++    expect(result.map((entry) => entry.id)).toEqual(["3"]);
++  });
++
++  it("忽略关键词大小写和多余空格", () => {
++    expect(matchesQuery(item({
++      title: "Blue Campus Card",
++      description: "Student card with number 0821."
++    }), "  blue   campus card  ")).toBe(true);
++  });
++
++  it("没有匹配结果时返回空数组", () => {
++    const result = filterItems([
++      item({ id: "1", title: "校园卡" }),
++      item({ id: "2", title: "雨伞" })
++    ], {
++      query: "不存在的物品"
++    });
++
++    expect(result).toEqual([]);
++  });
++
++  it("按创建时间升序或降序排序且不修改原数组", () => {
++    const items = [
++      item({ id: "older", createdAt: "2026-10-01T00:00:00+08:00" }),
++      item({ id: "newer", createdAt: "2026-10-08T00:00:00+08:00" })
++    ];
++
++    expect(sortItems(items, "desc").map((entry) => entry.id)).toEqual(["newer", "older"]);
++    expect(sortItems(items, "asc").map((entry) => entry.id)).toEqual(["older", "newer"]);
++    expect(items.map((entry) => entry.id)).toEqual(["older", "newer"]);
++  });
++});
