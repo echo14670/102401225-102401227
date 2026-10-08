@@ -1,0 +1,46 @@
+{
+  "name": "校园失物招领",
+  "appid": "__UNI__C30611F",
+  "description": "校园失物招领移动应用",
+  "versionName": "1.0.0",
+  "versionCode": 100,
+  "transformPx": false,
+  "vueVersion": "3",
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app",
+    "compilerVersion": 3,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "distribute": {
+      "android": {
+        "packagename": "com.lin.campuslostfound",
+        "minSdkVersion": 23,
+        "targetSdkVersion": 35,
+        "permissions": [
+          "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+          "<uses-permission android:name=\"android.permission.READ_MEDIA_IMAGES\"/>"
+        ]
+      },
+      "ios": {
+        "dSYMs": false
+      }
+    }
+  },
+  "h5": {
+    "title": "校园失物招领",
+    "router": {
+      "mode": "hash"
+    }
+  },
+  "mp-weixin": {
+    "usingComponents": true
+  },
+  "uniStatistics": {
+    "enable": false
+  }
+}

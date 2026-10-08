@@ -1,0 +1,25 @@
+node_modules/
+unpackage/
+artifacts/
+.hbuilderx/
+.gradle/
+.idea/
+*.iml
+local.properties
+android-local/local.properties
+android-local/**/build/
+android-local/.gradle/
+android-local/app/src/main/assets/apps/
+android-local/**/*.apk
+android-local/**/*.aab
+release/*.apk.sha256
+*.log
+.DS_Store
+
+# 签名材料必须保存在仓库外
+*.jks
+*.keystore
+*.p12
+*.pfx
+signing.properties
+keystore.properties
