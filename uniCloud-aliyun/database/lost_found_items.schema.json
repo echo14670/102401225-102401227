@@ -1,0 +1,76 @@
+{
+  "bsonType": "object",
+  "required": [
+    "id",
+    "type",
+    "status",
+    "title",
+    "category",
+    "eventTime",
+    "location",
+    "description",
+    "contact",
+    "ownerId",
+    "createdAt",
+    "updatedAt"
+  ],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": "doc.ownerId == auth.uid || clientId == doc.ownerId",
+    "delete": "doc.ownerId == auth.uid || clientId == doc.ownerId"
+  },
+  "properties": {
+    "_id": {
+      "description": "数据库主键"
+    },
+    "id": {
+      "bsonType": "string",
+      "description": "客户端信息 ID"
+    },
+    "type": {
+      "bsonType": "string",
+      "enum": ["lost", "found"]
+    },
+    "status": {
+      "bsonType": "string",
+      "enum": ["open", "resolved"]
+    },
+    "title": {
+      "bsonType": "string",
+      "maxLength": 30
+    },
+    "category": {
+      "bsonType": "string",
+      "enum": ["证件卡片", "生活用品", "电子产品", "钥匙", "书籍资料", "其他"]
+    },
+    "eventTime": {
+      "bsonType": "string"
+    },
+    "location": {
+      "bsonType": "string",
+      "maxLength": 50
+    },
+    "description": {
+      "bsonType": "string",
+      "maxLength": 200
+    },
+    "contact": {
+      "bsonType": "string",
+      "maxLength": 50
+    },
+    "photo": {
+      "bsonType": "string",
+      "maxLength": 500
+    },
+    "ownerId": {
+      "bsonType": "string"
+    },
+    "createdAt": {
+      "bsonType": "string"
+    },
+    "updatedAt": {
+      "bsonType": "string"
+    }
+  }
+}
