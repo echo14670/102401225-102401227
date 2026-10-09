@@ -50,33 +50,14 @@ npm test
 
 当前包含 23 个自动化测试，覆盖校验、搜索、筛选、状态文案、寻物/招领发布、增删改、权限、持久化、损坏数据恢复和云适配器请求转换。
 
-## 本地打包 Release APK
+## Release APK 下载
 
-本机工具目录：
+APK 已发布在 GitHub Release 板块，可直接下载安装：
 
-- HBuilderX：`C:\HBuilderX526\HBuilderX`
-- JDK 21：`C:\AndroidTools\jdk21\jdk-21.0.12.1`
-- Android SDK：`C:\AndroidTools\android-sdk`
-- DCloud Android SDK：`C:\AndroidTools\dcloud-android-sdk`
-- Release 签名：`C:\AndroidSigning\campus-lostfound`
+- [Release v1.0.0](https://github.com/echo14670/102401225-102401227/releases/tag/v1.0.0)
+- [直接下载 APK](https://github.com/echo14670/102401225-102401227/releases/download/v1.0.0/campus-lost-found-1.0.0-release.apk)
 
-执行：
-
-```powershell
-.\scripts\build-apk.ps1
-```
-
-脚本会完成 HBuilderX appResource 编译、资源同步、Gradle Release 构建、签名检查和 APK 归档。
-
-本地离线 SDK 从 3.1.10 起要求 `dcloud_appkey`。首次构建前需在 DCloud
-开发者中心为 AppID `__UNI__C30611F`、包名 `com.lin.campuslostfound`
-和 Release 证书 SHA1 申请 AppKey，并写入仓库外
-`C:\AndroidSigning\campus-lostfound\signing.properties`。详见
-`android-local/README.md`。
-
-当前仓库中的 APK 已使用项目专属 `dcloudAppkey` 完成本地编译和正式签名，
-并已在实体安卓设备验证寻物发布、招领发布、取消返回、联系方式、状态流转和
-本地持久化。当前 Release APK 的 SHA-256 为：
+当前 Release APK 的 SHA-256 为：
 
 `38b40259accd06a326cb1afc31ea478d520d4f49cf95cbf6f345fe80740e9585`
 
