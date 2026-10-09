@@ -9,6 +9,14 @@
       }
     },
     {
+      "path": "pages/search/index",
+      "style": {
+        "navigationBarTitleText": "搜索物品",
+        "navigationBarBackgroundColor": "#ffffff",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
       "path": "pages/publish/index",
       "style": {
         "navigationBarTitleText": "发布信息",
