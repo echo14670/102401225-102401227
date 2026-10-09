@@ -8,11 +8,12 @@
 | --- | --- |
 | F1 浏览失物/招领 | `pages/home/index.vue` |
 | F2/F3 发布寻物/招领 | `pages/publish/index.vue`、`pages/success/index.vue` |
+| F4 搜索物品 | `pages/search/index.vue` |
 | F5 查看详情与联系方式 | `pages/detail/index.vue` |
 | F6 修改“已找回/已归还”状态 | `pages/detail/index.vue`、`pages/mine/index.vue` |
 | F7 我的发布 | `pages/mine/index.vue` |
 
-基础版本实现浏览、发布、详情、联系方式、状态更新和“我的发布”，并包含一键复制联系方式、编辑、删除、示例数据恢复和 JSON 导入导出。
+原型中的 6 个页面、三段基本流程、隐藏式联系方式和信息状态规则均已实现。附加了分类/地点筛选、一键复制联系方式、编辑、删除、示例数据恢复和 JSON 导入导出。
 
 ## 目录结构
 
@@ -21,7 +22,7 @@ campus-lost-found-app/
 ├─ pages/                    uni-app 页面
 ├─ components/               卡片、空状态、底部导航
 ├─ src/
-│  ├─ domain/                数据模型、校验和状态文案
+│  ├─ domain/                数据模型、校验、搜索、状态文案
 │  ├─ repositories/          本地和 uniCloud Repository
 │  ├─ services/              存储适配、ID 生成
 │  ├─ store/                 全局响应式状态
@@ -47,7 +48,7 @@ npm install
 npm test
 ```
 
-当前包含 18 个自动化测试，覆盖校验、状态文案、寻物/招领发布、增删改、权限、持久化、损坏数据恢复和云适配器请求转换。
+当前包含 23 个自动化测试，覆盖校验、搜索、筛选、状态文案、寻物/招领发布、增删改、权限、持久化、损坏数据恢复和云适配器请求转换。
 
 ## 本地打包 Release APK
 
@@ -102,4 +103,4 @@ npm test
 
 ## 分工记录
 
-林子涵负责当前分支中的工程基础、数据层、Repository、Store 和核心页面。王圣杰负责的搜索领域模块、搜索页面、首页筛选和对应测试位于 `handoff/wang-codex-handoff.zip`，由王圣杰在自己的 fork 中完成提交并通过 Pull Request 合并。
+第三次作业的两份提交文档对页面分工记录不一致。本仓库不伪造 GitHub 提交身份，提交前需由王圣杰和林子涵确认真实分工，并在 `docs/BLOG_DRAFT.md` 中填写准确内容。

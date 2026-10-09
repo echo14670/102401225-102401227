@@ -5,6 +5,7 @@ import {
 } from "../domain/constants.js";
 import { createSeedItems } from "../domain/seed.js";
 import { cleanText, validateItemDraft, validateStoredItem } from "../domain/validation.js";
+import { filterItems } from "../domain/search.js";
 import { cloneItem, getItemVisual } from "../domain/items.js";
 import { generateId } from "../services/id.js";
 
@@ -51,38 +52,6 @@ function normalizeSnapshot(value) {
       ? value.recentSearches.map(cleanText).filter(Boolean).slice(0, 8)
       : []
   };
-}
-
-function filterAndSortItems(items, filters = {}) {
-  const type = filters.type || "all";
-  const category = filters.category || "all";
-  const status = filters.status || "all";
-  const location = cleanText(filters.location).toLocaleLowerCase();
-  const query = cleanText(filters.query).toLocaleLowerCase();
-  const factor = filters.sort === "asc" ? 1 : -1;
-
-  return [...items]
-    .filter((item) => {
-      if (type !== "all" && item.type !== type) return false;
-      if (category !== "all" && item.category !== category) return false;
-      if (status !== "all" && item.status !== status) return false;
-      if (
-        location &&
-        !cleanText(item.location).toLocaleLowerCase().includes(location)
-      ) {
-        return false;
-      }
-      if (!query) return true;
-
-      return [item.title, item.description, item.category, item.location]
-        .map((value) => cleanText(value).toLocaleLowerCase())
-        .some((value) => value.includes(query));
-    })
-    .sort((left, right) => {
-      const leftTime = new Date(left.createdAt).getTime();
-      const rightTime = new Date(right.createdAt).getTime();
-      return (leftTime - rightTime) * factor;
-    });
 }
 
 export function createLocalRepository(options = {}) {
@@ -212,7 +181,7 @@ export function createLocalRepository(options = {}) {
 
   async function listItems(filters = {}) {
     ensureReady();
-    return filterAndSortItems(snapshot.items, filters).map(cloneItem);
+    return filterItems(snapshot.items, filters).map(cloneItem);
   }
 
   async function getItem(id) {
